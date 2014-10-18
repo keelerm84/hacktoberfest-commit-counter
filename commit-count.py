@@ -1,3 +1,6 @@
+import datetime
+
+
 class Specification:
     def is_satisified_by(candidate):
         raise NotImplementedError('And must be implemented')
@@ -47,3 +50,20 @@ class OrSpecification(CompositeSpecification):
 
     def is_satisified_by(self, candidate):
         return self.lhs.is_satisified_by(candidate) or self.rhs.is_satisified_by(candidate)
+
+
+class PushEventSpecification(CompositeSpecification):
+    def is_satisified_by(self, candidate):
+        return candidate['type'] == "PushEvent"
+
+
+class CreatedOnOrAfterSpecification(CompositeSpecification):
+    def __init__(self, starting_date):
+        self.starting_date = starting_date
+
+    def is_satisified_by(self, candidate):
+        commit_date = datetime.datetime.strptime(candidate['created_at'].split('T')[0], "%Y-%m-%d")
+
+        return self.starting_date <= commit_date
+
+
