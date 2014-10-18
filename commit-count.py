@@ -58,6 +58,9 @@ class PushEventSpecification(CompositeSpecification):
     def is_satisified_by(self, candidate):
         return candidate['type'] == "PushEvent"
 
+class PublicEventSpecification(CompositeSpecification):
+    def is_satisified_by(self, candidate):
+        return candidate['public'] == True
 
 class CreatedOnOrAfterSpecification(CompositeSpecification):
     def __init__(self, starting_date):
@@ -114,9 +117,10 @@ token = "token"
 starting_date = datetime.datetime(2014, 9, 30)
 
 push_spec = PushEventSpecification()
+public_spec = PublicEventSpecification()
 starting_date_spec = CreatedOnOrAfterSpecification(starting_date)
 
-do_qualifying_spec = push_spec.and_if(starting_date_spec)
+do_qualifying_spec = push_spec.and_if(public_spec).and_if(starting_date_spec)
 
 fetch_repos = GithubFetchAffectedRepositories(username, token)
 
