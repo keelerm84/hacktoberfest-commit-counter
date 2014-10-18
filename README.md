@@ -19,7 +19,7 @@ dependencies with
 In the `commit-count.py` script, provide your username and your
 [application token](https://help.github.com/articles/creating-an-access-token-for-command-line-use/).
 
-# TODO
+## TODO
 
 Currently, there are a few more issues that need to be addressed.  I haven't
 yet provided a mechanism for specifying the ending boundary.  As the repository
