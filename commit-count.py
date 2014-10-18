@@ -1,3 +1,5 @@
+import requests
+import json
 import datetime
 
 
@@ -66,4 +68,44 @@ class CreatedOnOrAfterSpecification(CompositeSpecification):
 
         return self.starting_date <= commit_date
 
+
+class GithubFetchAffectedRepositories:
+    def __init__(self, username, token):
+        self.username = username
+        self.token = token
+
+    def repos(self, spec):
+        url = "https://api.github.com/users/%s/events/public" % (self.username)
+
+        while True:
+            response = requests.get(url, auth=('token', self.token))
+            for event in response.json():
+                if spec.is_satisified_by(event):
+                    yield event['repo']['name']
+
+            if not 'next' in response.links:
+                break
+
+            url = response.links['next']['url']
+
+
+class GithubFetchCommits:
+    def __init__(self, repo, username, token, since):
+        self.repo = repo
+        self.username = username
+        self.token = token
+        self.since = since
+
+    def commits(self):
+        url = "https://api.github.com/repos/%s/commits?since=%s&author=%s" % (self.repo, self.since.strftime("%Y-%m-%d"), self.username)
+
+        while True:
+            response = requests.get(url, auth=('token', self.token))
+            for commit in response.json():
+                yield commit['sha']
+
+            if not 'next' in response.links:
+                break
+
+            url = response.links['next']['url']
 
