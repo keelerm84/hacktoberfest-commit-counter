@@ -109,3 +109,21 @@ class GithubFetchCommits:
 
             url = response.links['next']['url']
 
+username = "username"
+token = "token"
+starting_date = datetime.datetime(2014, 9, 30)
+
+push_spec = PushEventSpecification()
+starting_date_spec = CreatedOnOrAfterSpecification(starting_date)
+
+do_qualifying_spec = push_spec.and_if(starting_date_spec)
+
+fetch_repos = GithubFetchAffectedRepositories(username, token)
+
+sum = 0
+for repo in set(fetch_repos.repos(do_qualifying_spec)):
+    fetch_commits = GithubFetchCommits(repo, username, token, starting_date)
+    commits = list(fetch_commits.commits())
+    sum += len(commits)
+
+print "Total number of commits is %d" % (sum)
